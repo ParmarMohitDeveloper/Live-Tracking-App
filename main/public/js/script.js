@@ -14,6 +14,9 @@ let myId = null;
 let routeLine = null;
 let firstLocation = true;
 
+let myLatitude = null;
+let myLongitude = null;
+
 const colors = ["red","blue","green","orange","yellow","violet"];
 
 function getColor(id){
@@ -41,11 +44,16 @@ function createIcon(color){
 
 }
 
+/* ---------------- GEOLOCATION TRACKING ---------------- */
+
 if(navigator.geolocation){
 
 navigator.geolocation.watchPosition((position)=>{
 
     const {latitude,longitude} = position.coords;
+
+    myLatitude = latitude;
+    myLongitude = longitude;
 
     socket.emit("send-location",{latitude,longitude});
 
@@ -54,13 +62,25 @@ navigator.geolocation.watchPosition((position)=>{
         firstLocation=false;
     }
 
+},
+(error)=>{
+    console.log(error);
+},
+{
+    enableHighAccuracy:true,
+    maximumAge:0,
+    timeout:5000
 });
 
 }
 
+/* ---------------- SOCKET CONNECTION ---------------- */
+
 socket.on("connect",()=>{
     myId = socket.id;
 });
+
+/* ---------------- EXISTING USERS ---------------- */
 
 socket.on("existing-users",(users)=>{
 
@@ -92,6 +112,8 @@ socket.on("existing-users",(users)=>{
 
 });
 
+/* ---------------- RECEIVE LOCATION ---------------- */
+
 socket.on("receive-location",(data)=>{
 
     const {id,latitude,longitude,username} = data;
@@ -122,6 +144,8 @@ socket.on("receive-location",(data)=>{
 
 });
 
+/* ---------------- USER DISCONNECTED ---------------- */
+
 socket.on("user-disconnected",(id)=>{
 
     if(markers[id]){
@@ -133,6 +157,8 @@ socket.on("user-disconnected",(id)=>{
     }
 
 });
+
+/* ---------------- ROUTE + GOOGLE MAPS ---------------- */
 
 async function showRoute(targetId){
 
@@ -164,15 +190,39 @@ async function showRoute(targetId){
     }).addTo(map);
 
     const distance = (route.distance/1000).toFixed(2);
-
     const duration = Math.round(route.duration/60);
 
+    const googleMapsUrl =
+`https://www.google.com/maps/dir/?api=1&destination=${end.lat},${end.lng}`;
+
     markers[targetId]
-    .bindPopup(
-        "Distance: "+distance+" KM<br>ETA: "+duration+" min"
-    )
+    .bindPopup(`
+    <b>Distance:</b> ${distance} KM<br>
+    <b>ETA:</b> ${duration} min<br><br>
+    <button onclick="openGoogleMaps('${googleMapsUrl}')">
+    Open in Google Maps
+    </button>
+    `)
     .openPopup();
 
     map.fitBounds(routeLine.getBounds(),{padding:[50,50]});
 
 }
+
+/* ---------------- GOOGLE MAPS REDIRECT ---------------- */
+
+function openGoogleMaps(url){
+    window.open(url,"_blank");
+}
+
+/* ---------------- MY LOCATION BUTTON ---------------- */
+
+const locateBtn = document.getElementById("locateBtn");
+
+locateBtn.addEventListener("click",()=>{
+
+    if(myLatitude && myLongitude){
+        map.setView([myLatitude,myLongitude],16);
+    }
+
+});
