@@ -149,20 +149,6 @@ http://localhost:(your port)
 
 ---
 
-## 📸 Demo
-
-*(Add screenshots or GIF here for better presentation)*
-
-Example:
-
-```
-<img width="561" height="247" alt="image" src="https://github.com/user-attachments/assets/045a351e-e560-42a2-bac2-69f1598d3e48" />
-
-
-<img width="1751" height="950" alt="image" src="https://github.com/user-attachments/assets/9c11499f-d18f-4820-8869-3f9758da4b35" />
-
-```
-
 ---
 
 ## 🔮 Future Improvements
