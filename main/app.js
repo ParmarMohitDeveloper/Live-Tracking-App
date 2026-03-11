@@ -81,5 +81,5 @@ app.get("/",(req,res)=>{
 });
 
 server.listen(3547,()=>{
-    console.log("Server running on port 3000");
+    console.log("Server running on port 3547");
 });

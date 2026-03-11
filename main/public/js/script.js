@@ -6,7 +6,7 @@ socket.emit("join", username);
 const map = L.map("map").setView([0,0],13);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-    attribution:"Tracking"
+    attribution:"Developed by Parmar Mohit"
 }).addTo(map);
 
 const markers = {};
